@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-undef */
 import React, { memo } from 'react';
 import { Alert, Button, Drawer } from 'rsuite';
@@ -15,6 +16,7 @@ const EditRoomBtnDrawer = () => {
   const description = useCurrentRoom(v => v.description);
 
   const updateData = (key, value) => {
+    console.log({ key, value, chatId, path: `rooms/${chatId}/${key}` });
     database
       .ref(`rooms/${chatId}`)
       .child(key)
