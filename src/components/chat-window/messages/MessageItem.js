@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 /* eslint-disable react/jsx-no-comment-textnodes */
 import React, { memo } from 'react';
 import { Button } from 'rsuite';
@@ -5,11 +6,14 @@ import TimeAgo from 'timeago-react';
 import ProfileAvatar from '../../dashboard/ProfileAvatar';
 import PresenceDot from '../../PresenceDot';
 import ProfileInfoBtnModal from './ProfileInfoBtnModal';
+import IconBtnControl from './IconBtnControl';
 import { useCurrentRoom } from '../../../context/current-room.context';
 import { auth } from '../../../misc/firebase';
+import { useHover } from '../../../misc/custom-hooks';
 
 const MessageItem = ({ message, handleAdmin }) => {
   const { author, createdAt, text } = message;
+  const [selRef, isHoverd] = useHover();
 
   const isAdmin = useCurrentRoom(v => v.isAdmin);
   const admins = useCurrentRoom(v => v.admins);
@@ -19,32 +23,44 @@ const MessageItem = ({ message, handleAdmin }) => {
   const canGrantAdmin = isAdmin && !isAuthor;
 
   return (
-    <li className="padded mb-1">
-      <div className="d-flex align-items-center font-bolder mb-1" />
-      <PresenceDot uid={author.uid} />
-      <ProfileAvatar
-        src={author.avatar}
-        name={author.name}
-        className="ml-1"
-        size="xs"
-      />
-      <ProfileInfoBtnModal
-        profile={author}
-        appearance="link"
-        className="p-0 ml-1 text-black"
-      >
-        {canGrantAdmin && (
-          <Button block onClick={() => handleAdmin(author.uid)} color="blue">
-            {isMsgAuthorAdmin
-              ? 'Remove admin permission'
-              : 'Give admin in this room'}
-          </Button>
-        )}
-      </ProfileInfoBtnModal>
-      <TimeAgo
-        datetime={createdAt}
-        className="font-normal text-black-45 ml-2"
-      />
+    <li
+      className={`padded mb-1 cursor-pointer ${isHoverd} ? 'bg-black-02' : ''`}
+      ref={selRef}
+    >
+      <div className="d-flex align-items-center font-bolder mb-1">
+        <PresenceDot uid={author.uid} />
+        <ProfileAvatar
+          src={author.avatar}
+          name={author.name}
+          className="ml-1"
+          size="xs"
+        />
+        <ProfileInfoBtnModal
+          profile={author}
+          appearance="link"
+          className="p-0 ml-1 text-black"
+        >
+          {canGrantAdmin && (
+            <Button block onClick={() => handleAdmin(author.uid)} color="blue">
+              {isMsgAuthorAdmin
+                ? 'Remove admin permission'
+                : 'Give admin in this room'}
+            </Button>
+          )}
+        </ProfileInfoBtnModal>
+        <TimeAgo
+          datetime={createdAt}
+          className="font-normal text-black-45 ml-2"
+        />
+        <IconBtnControl
+          {...(true ? { color: 'red' } : {})}
+          isVisible
+          iconName="heart"
+          tooltip="Like this message"
+          onClick={() => {}}
+          badgeContent={5}
+        />
+      </div>
       <div>
         <span className="word-break-all">{text}</span>
       </div>

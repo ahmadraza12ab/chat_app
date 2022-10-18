@@ -76,7 +76,7 @@ const AvatarUploadBtn = () => {
       <div>
         <label
           htmlFor="avatar-upload"
-          className="d-block cursor-ppointer padded"
+          className="d-block cursor-pointer padded"
         >
           Select new avatar
           <input
