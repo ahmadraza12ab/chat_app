@@ -1,8 +1,9 @@
+/* eslint-disable no-console */
 /* eslint-disable no-param-reassign */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Alert } from 'rsuite';
-import { database } from '../../../misc/firebase';
+import { auth, database } from '../../../misc/firebase';
 import { transformToArrWithId } from '../../../misc/helpers';
 import MessageItem from './MessageItem';
 
@@ -25,6 +26,35 @@ const Messages = () => {
       messageRef.off('value');
     };
   }, [chatId]);
+
+  const handleLike = useCallback(async msgId => {
+    // console.log('Handle like', msgId);
+    try {
+      const { uid } = auth.currentUser;
+      const messageRef = database.ref(`/messages/${msgId}`);
+      let alertMsg;
+      await messageRef.transaction(msg => {
+        if (msg) {
+          if (msg.likes && msg.likes[uid]) {
+            msg.likeCount -= 1;
+            msg.likes[uid] = null;
+            alertMsg = 'Like removed';
+          } else {
+            msg.likeCount += 1;
+            if (!msg.likes) {
+              msg.likes = {};
+            }
+            msg.likes[uid] = true;
+            alertMsg = 'Like added';
+          }
+        }
+        return msg;
+      });
+      Alert.info(alertMsg, 4000);
+    } catch (err) {
+      Alert.info(`Error occured: ${err.message}`, 4000);
+    }
+  }, []);
 
   const handleAdmin = useCallback(
     async uid => {
@@ -52,7 +82,12 @@ const Messages = () => {
       {isChatEmpty && <li>No messages yet</li>}
       {canShowMessages &&
         messages.map(msg => (
-          <MessageItem key={msg.id} message={msg} handleAdmin={handleAdmin} />
+          <MessageItem
+            key={msg.id}
+            message={msg}
+            handleAdmin={handleAdmin}
+            handleLike={handleLike}
+          />
         ))}
     </ul>
   );
