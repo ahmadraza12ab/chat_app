@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-undef */
 export function getNameInitials(name) {
   const splitName = name.toUpperCase().split(' ');
@@ -42,4 +43,16 @@ export async function getUserUpdates(userId, keyToUpdate, value, db) {
     updates[`/rooms/${roomSnap.key}/lastMessage/author/${keyToUpdate}`] = value;
   });
   return updates;
+}
+
+export function groupBy(array, groupingKeyFn) {
+  return array.reduce((result, item) => {
+    const groupingKey = groupingKeyFn(item);
+    if (!result[groupingKey]) {
+      result[groupingKey] = [];
+    }
+    result[groupingKey].push(item);
+
+    return result;
+  }, {});
 }
