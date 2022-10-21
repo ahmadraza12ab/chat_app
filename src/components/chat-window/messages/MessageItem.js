@@ -35,7 +35,7 @@ const renderFileMessage = file => {
 
 const MessageItem = ({ message, handleAdmin, handleLike, handleDelete }) => {
   const { author, createdAt, text, file, likeCount, likes } = message;
-  const [selRef, isHoverd] = useHover();
+  const [selfRef, isHovered] = useHover();
   const isMobile = useMediaQuery('(max-width:992px)');
 
   const isAdmin = useCurrentRoom(v => v.isAdmin);
@@ -44,14 +44,14 @@ const MessageItem = ({ message, handleAdmin, handleLike, handleDelete }) => {
   const isMsgAuthorAdmin = admins.includes(author.uid);
   const isAuthor = auth.currentUser.uid === author.uid;
   const canGrantAdmin = isAdmin && !isAuthor;
-  const canShowIcons = isMobile || isHoverd;
+  const canShowIcons = isMobile || isHovered;
   // const { like } = message;
   const isLiked = likes && Object.keys(likes).includes(auth.currentUser.uid);
 
   return (
     <li
-      className={`padded mb-1 cursor-pointer ${isHoverd} ? 'bg-black-02' : ''`}
-      ref={selRef}
+      ref={selfRef}
+      className={`padded mb-1 cursor-pointer ${isHovered ? 'bg-black-02' : ''}`}
     >
       <div className="d-flex align-items-center font-bolder mb-1">
         <PresenceDot uid={author.uid} />
